@@ -22,7 +22,7 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const result = await model.generateContent(prompt);
-        // setGenText(result.response.text())
+        setGenText(result.response.text())
         console.log(result.response.text());
       } catch (error) {
         console.error("Error generating content:", error);
@@ -31,26 +31,81 @@ export default function Home() {
 
     // Call the async function
     fetchData();
-  }, [model, prompt]);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-1 container mx-auto p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-2">Section 1</h2>
-            <p className="text-black">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
+
+          <div>
+            <label className="block text-sm font-medium leading-6 text-gray-900">Enter Prompt</label>
+            <div className="relative mt-2 rounded-md shadow-sm">
+              <input type="text" name="prompt" id="prompt" className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Enter Prompt" />
+              <div className="absolute inset-y-0 right-0 flex items-center">
+                <label className="sr-only">Enter Prompt</label>
+              </div>
+            </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-2">Section 2</h2>
-            <p className="text-black">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          <div>
+            <input type="radio" id="option1" name="options" value="1" className="hidden" />
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
+              Back
+            </label>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-2">Section 3</h2>
-            <p className="text-black">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          <div>
+            <input type="radio" id="option2" name="options" value="2" className="hidden" />
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
+              Biceps
+            </label>
           </div>
+          <div>
+            <input type="radio" id="option2" name="options" value="2" className="hidden" />
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
+              Chest
+            </label>
+          </div>
+          <div>
+            <input type="radio" id="option2" name="options" value="2" className="hidden" />
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
+              Triceps
+            </label>
+          </div>
+          <div>
+            <input type="radio" id="option2" name="options" value="2" className="hidden" />
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
+              Shoulders
+            </label>
+          </div>
+          <div>
+            <input type="radio" id="option2" name="options" value="2" className="hidden" />
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
+              Legs
+            </label>
+          </div>
+          <div>
+            <input type="radio" id="option2" name="options" value="2" className="hidden" />
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
+              Abs
+            </label>
+          </div>
+          <div>
+            <input type="radio" id="option2" name="options" value="2" className="hidden" />
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
+              Calfs
+            </label>
+          </div>
+
           <div className="bg-black p-6 rounded-lg shadow-md">
-            {/* <p className="text-white">{genText}</p> */}
+            <p className="text-white">{genText}</p>
           </div>
         </div>
       </main>
