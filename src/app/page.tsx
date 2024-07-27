@@ -3,112 +3,128 @@
 import Image from "next/image";
 import "./globals.css";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 
-// FIND OUT A WAY TO ADD ENV KEYWORDS WITHOUT ACTUALLY USING ACTUAL STRINGS
+// 
 
+type CheckboxState = {
+  [key: string]: boolean;
+};
+
+const initialCheckboxState: CheckboxState = {
+  back: false,
+  biceps: false,
+  chest: false,
+  triceps: false,
+  shoulders: false,
+  legs: false,
+  abs: false,
+  calves: false,
+};
 
 export default function Home() {
-  const apiKey = process.env.API_KEY as string
-  const apiModel = process.env.MODEL_NAME as string
-  const genAI = new GoogleGenerativeAI("AIzaSyDituK8rBLGWGiIpo0t2krESRCFEJ2dH80");
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+  const apiKey = process.env.NEXT_PUBLIC_API_KEY as string
+  const apiModel = process.env.NEXT_PUBLIC_MODEL_NAME as string
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: apiModel })
 
-  const prompt = "Write a story about basketball.";
+  const prompt = "Give me a workout for biceps";
   const [genText, setGenText] = useState<string>()
+  const [checkboxes, setCheckboxes] = useState<CheckboxState>(initialCheckboxState);
 
-  useEffect(() => {
-    // Define an async function
-    const fetchData = async () => {
-      try {
-        const result = await model.generateContent(prompt);
-        setGenText(result.response.text())
-        console.log(result.response.text());
-      } catch (error) {
-        console.error("Error generating content:", error);
-      }
-    };
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { id, checked } = event.target;
+    setCheckboxes((prev) => ({
+      ...prev,
+      [id]: checked,
+    }));
 
-    // Call the async function
-    fetchData();
-  }, []);
+    console.log("checkboxes", checkboxes)
+  };
+
+  // Function to get checked values as a string
+  const getCheckedValuesString = () => {
+    const checkedValues = Object.keys(checkboxes).filter((key) => checkboxes[key]);
+    const newValues = checkedValues.join(', ');
+    console.log("newValues", newValues)
+    return newValues;
+  };
+
+  // Function to submit prompt to Gemini
+  const createWorkoutPlan = () => {
+    const checkedValuesString = getCheckedValuesString();
+    return `Create workout plan for: ${checkedValuesString}`
+  }
+
+  const fetchData = async () => {
+    try {
+      const result = await model.generateContent(createWorkoutPlan())
+      setGenText(result.response.text())
+      console.log(result.response.text())
+    } catch (error) {
+      console.error("Error generating content:", error)
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-1 container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
-
-          <div>
-            <label className="block text-sm font-medium leading-6 text-gray-900">Enter Prompt</label>
-            <div className="relative mt-2 rounded-md shadow-sm">
-              <input type="text" name="prompt" id="prompt" className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Enter Prompt" />
-              <div className="absolute inset-y-0 right-0 flex items-center">
-                <label className="sr-only">Enter Prompt</label>
+          <h1>Select muscle groups to create a workout plan</h1>
+          <div className="flex flex-col items-start mb-4 p-4 border border-gray-300 rounded-lg shadow-lg">
+            {Object.keys(checkboxes).map((key) => (
+              <div key={key} className="flex items-center mb-4">
+                <input
+                  id={key}
+                  type="checkbox"
+                  checked={checkboxes[key]}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label htmlFor={key} className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 capitalize">
+                  {key}
+                </label>
               </div>
+            ))}
+            {/* <div className="flex items-center mb-4">
+              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-2xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Back</label>
             </div>
+            <div className="flex items-center mb-4">
+              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Biceps</label>
+            </div>
+            <div className="flex items-center mb-4">
+              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Chest</label>
+            </div>
+            <div className="flex items-center mb-4">
+              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Triceps</label>
+            </div>
+            <div className="flex items-center mb-4">
+              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Shoulders</label>
+            </div>
+            <div className="flex items-center mb-4">
+              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Legs</label>
+            </div>
+            <div className="flex items-center mb-4">
+              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Abs</label>
+            </div>
+            <div className="flex items-center mb-4">
+              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Calves</label>
+            </div> */}
           </div>
-          <div>
-            <input type="radio" id="option1" name="options" value="1" className="hidden" />
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
-              Back
-            </label>
-          </div>
-          <div>
-            <input type="radio" id="option2" name="options" value="2" className="hidden" />
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
-              Biceps
-            </label>
-          </div>
-          <div>
-            <input type="radio" id="option2" name="options" value="2" className="hidden" />
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
-              Chest
-            </label>
-          </div>
-          <div>
-            <input type="radio" id="option2" name="options" value="2" className="hidden" />
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
-              Triceps
-            </label>
-          </div>
-          <div>
-            <input type="radio" id="option2" name="options" value="2" className="hidden" />
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
-              Shoulders
-            </label>
-          </div>
-          <div>
-            <input type="radio" id="option2" name="options" value="2" className="hidden" />
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
-              Legs
-            </label>
-          </div>
-          <div>
-            <input type="radio" id="option2" name="options" value="2" className="hidden" />
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
-              Abs
-            </label>
-          </div>
-          <div>
-            <input type="radio" id="option2" name="options" value="2" className="hidden" />
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="w-4 h-4 inline-block mr-2 border border-gray-300 rounded-full flex-no-shrink"></span>
-              Calfs
-            </label>
-          </div>
-
+          <button className="border border-gray-50" onClick={() => alert(fetchData())}>Submit</button>
           <div className="bg-black p-6 rounded-lg shadow-md">
             <p className="text-white">{genText}</p>
           </div>
         </div>
-      </main>
+      </main >
     </div >
   );
 }
