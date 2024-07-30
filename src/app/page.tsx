@@ -7,7 +7,6 @@ import React, { useEffect, useState, ChangeEvent } from "react";
 import { Puff } from "react-loader-spinner";
 
 // MAKE PAGE LOOK NICE
-// ADD EFFECTS TO HOVER ON SUBMIT BUTTON
 
 type CheckboxState = {
   [key: string]: boolean;
@@ -98,9 +97,6 @@ export default function Home() {
     }
   }
 
-  // const lineBreaks = resultWithoutAsterisks.match(/[^.!?]+[.!?]+/g) || [];
-
-
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-1 container mx-auto p-4">
@@ -122,14 +118,16 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <button className="border border-gray-50" onClick={() => fetchData()}>Submit</button>
+          <button className="border border-gray-50 rounded transition-transform transform hover:scale-105" onClick={() => fetchData()}>Submit</button>
           <div className="bg-black p-6 rounded-lg shadow-md">
             {loading ? (
-              <Puff
-                color="#00BFFF"
-                height={100}
-                width={100}
-              />
+              <div className="flex justify-center">
+                <Puff
+                  color="#00BFFF"
+                  height={100}
+                  width={100}
+                />
+              </div>
             ) : (
               genText.length > 0 && <TextWithLineBreaks sentences={genText} /> // Show content when loaded
             )}
