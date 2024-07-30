@@ -3,9 +3,11 @@
 import Image from "next/image";
 import "./globals.css";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { useEffect, useState, ChangeEvent } from "react";
+import React, { useEffect, useState, ChangeEvent } from "react";
+import { Puff } from "react-loader-spinner";
 
-// 
+// MAKE PAGE LOOK NICE
+// ADD EFFECTS TO HOVER ON SUBMIT BUTTON
 
 type CheckboxState = {
   [key: string]: boolean;
@@ -22,6 +24,10 @@ const initialCheckboxState: CheckboxState = {
   calves: false,
 };
 
+interface TextWithLineBreaksProps {
+  sentences: string[];
+}
+
 export default function Home() {
   const apiKey = process.env.NEXT_PUBLIC_API_KEY as string
   const apiModel = process.env.NEXT_PUBLIC_MODEL_NAME as string
@@ -29,8 +35,9 @@ export default function Home() {
   const model = genAI.getGenerativeModel({ model: apiModel })
 
   const prompt = "Give me a workout for biceps";
-  const [genText, setGenText] = useState<string>()
+  const [genText, setGenText] = useState<string[]>([]);
   const [checkboxes, setCheckboxes] = useState<CheckboxState>(initialCheckboxState);
+  const [loading, setLoading] = useState<boolean>(false); // Add loading state
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { id, checked } = event.target;
@@ -56,15 +63,43 @@ export default function Home() {
     return `Create workout plan for: ${checkedValuesString}`
   }
 
+  const TextWithLineBreaks: React.FC<TextWithLineBreaksProps> = ({ sentences }) => {
+    const formattedText = [];
+
+    for (let i = 0; i < sentences.length; i++) {
+      formattedText.push(sentences[i]);
+      if ((i + 1) % 2 === 0 && i !== sentences.length - 1) {
+        formattedText.push(
+          <>
+            <br key={`br-${i}`} />
+            <br />
+          </>
+        );
+      }
+    }
+
+    return <div>{formattedText}</div>;
+  };
+
   const fetchData = async () => {
     try {
-      const result = await model.generateContent(createWorkoutPlan())
-      setGenText(result.response.text())
-      console.log(result.response.text())
+      setTimeout(() => {
+        setLoading(false); // Set loading to false when fetch completes
+      }, 3000)
     } catch (error) {
       console.error("Error generating content:", error)
+    } finally {
+      setLoading(true)
+      const result = await model.generateContent(createWorkoutPlan())
+      const resultWithoutAsterisks = result?.response?.text().replace(/[#*]/g, '')
+      const lineBreaks = resultWithoutAsterisks?.match(/[^.!?]+[.!?]+/g) || []
+      setGenText(lineBreaks)
+      console.log("genText", genText)
     }
   }
+
+  // const lineBreaks = resultWithoutAsterisks.match(/[^.!?]+[.!?]+/g) || [];
+
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -86,42 +121,18 @@ export default function Home() {
                 </label>
               </div>
             ))}
-            {/* <div className="flex items-center mb-4">
-              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-2xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Back</label>
-            </div>
-            <div className="flex items-center mb-4">
-              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Biceps</label>
-            </div>
-            <div className="flex items-center mb-4">
-              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Chest</label>
-            </div>
-            <div className="flex items-center mb-4">
-              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Triceps</label>
-            </div>
-            <div className="flex items-center mb-4">
-              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Shoulders</label>
-            </div>
-            <div className="flex items-center mb-4">
-              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Legs</label>
-            </div>
-            <div className="flex items-center mb-4">
-              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Abs</label>
-            </div>
-            <div className="flex items-center mb-4">
-              <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-              <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Calves</label>
-            </div> */}
           </div>
-          <button className="border border-gray-50" onClick={() => alert(fetchData())}>Submit</button>
+          <button className="border border-gray-50" onClick={() => fetchData()}>Submit</button>
           <div className="bg-black p-6 rounded-lg shadow-md">
-            <p className="text-white">{genText}</p>
+            {loading ? (
+              <Puff
+                color="#00BFFF"
+                height={100}
+                width={100}
+              />
+            ) : (
+              genText.length > 0 && <TextWithLineBreaks sentences={genText} /> // Show content when loaded
+            )}
           </div>
         </div>
       </main >
