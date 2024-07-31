@@ -36,7 +36,7 @@ export default function Home() {
   const prompt = "Give me a workout for biceps";
   const [genText, setGenText] = useState<string[]>([]);
   const [checkboxes, setCheckboxes] = useState<CheckboxState>(initialCheckboxState);
-  const [loading, setLoading] = useState<boolean>(false); // Add loading state
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { id, checked } = event.target;
@@ -98,30 +98,34 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-950">
+    <div className="min-h-screen flex flex-col bg-white justify-center">
+      <h1 className="gradient-text text-4xl p-3 font-extrabold">WorkoutPlan</h1>
       <main className="flex-1 container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
-          <h1>Select muscle groups to create a workout plan</h1>
-          <div className="flex flex-col items-start mb-4 p-4 border border-gray-300 rounded-lg shadow-lg">
-            {Object.keys(checkboxes).map((key) => (
-              <div key={key} className="flex items-center mb-4">
-                <input
-                  id={key}
-                  type="checkbox"
-                  checked={checkboxes[key]}
-                  onChange={handleCheckboxChange}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label htmlFor={key} className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 capitalize">
-                  {key}
-                </label>
-              </div>
-            ))}
+          <div className="flex flex-col mb-4 p-4 border border-gray-300 rounded-lg shadow-lg bg-gradient-to-b from-blue-500 to-purple-600">
+            <h3 className="text-white p-3 mb-3">Select muscle groups to create a workout plan</h3>
+            <div>
+              {Object.keys(checkboxes).map((key) => (
+                <div key={key} className="flex items-center mb-4">
+                  <input
+                    id={key}
+                    type="checkbox"
+                    checked={checkboxes[key]}
+                    onChange={handleCheckboxChange}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label htmlFor={key} className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 capitalize">
+                    {key}
+                  </label>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-center">
+              <button className="p-3 rounded transition-transform transform hover:scale-105 bg-purple-950 lg:w-1/2" onClick={() => fetchData()}>Submit</button>
+            </div>
           </div>
-          <div className="flex justify-center">
-            <button className="p-1 rounded transition-transform transform hover:scale-105 bg-green-900 lg:w-1/2" onClick={() => fetchData()}>Submit</button>
-          </div>
-          <div className="p-6 rounded-lg shadow-md bg-gray-950">
+
+          <div className="p-6 rounded-lg shadow-md bg-gradient-to-b from-pink-500 to-orange-500">
             {loading ? (
               <div className="flex justify-center">
                 <Puff
