@@ -98,7 +98,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-950">
       <main className="flex-1 container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
           <h1>Select muscle groups to create a workout plan</h1>
@@ -118,8 +118,10 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <button className="border border-gray-50 rounded transition-transform transform hover:scale-105" onClick={() => fetchData()}>Submit</button>
-          <div className="bg-black p-6 rounded-lg shadow-md">
+          <div className="flex justify-center">
+            <button className="p-1 rounded transition-transform transform hover:scale-105 bg-green-900 lg:w-1/2" onClick={() => fetchData()}>Submit</button>
+          </div>
+          <div className="p-6 rounded-lg shadow-md bg-gray-950">
             {loading ? (
               <div className="flex justify-center">
                 <Puff
