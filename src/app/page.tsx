@@ -99,7 +99,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white justify-center">
-      <h1 className="gradient-text text-4xl p-3 font-extrabold">WorkoutPlan</h1>
+      <h1 className="gradient-text text-4xl p-3 font-extrabold">Gemini</h1>
       <main className="flex-1 container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
           <div className="flex flex-col mb-4 p-4 border border-gray-300 rounded-lg shadow-lg bg-gradient-to-b from-blue-500 to-purple-600">
